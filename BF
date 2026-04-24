@@ -16,7 +16,7 @@ _G.Seriality = true
 
 task.spawn(function()
     while true do
-        task.wait(0.2)
+        task.wait(1)
         pcall(function()
             ReplicatedStorage.Remotes.CommF_:InvokeServer("EnablePvp")
         end)
@@ -54,7 +54,7 @@ local function AttackNoCooldown()
     local tool = character:FindFirstChildOfClass("Tool")
     if not tool then return end
 
-    local enemies = GetEnemiesInRange(character, 100)
+    local enemies = GetEnemiesInRange(character, 50)
     if #enemies == 0 then return end
 
     local net = ReplicatedStorage:FindFirstChild("Modules") and ReplicatedStorage.Modules:FindFirstChild("Net")
@@ -84,8 +84,13 @@ local function AttackNoCooldown()
     registerHit:FireServer(mainTarget, targets)
 end
 
+local lastAttack = 0
+
 RunService.Heartbeat:Connect(function()
     if not _G.Seriality then return end
+
+    if tick() - lastAttack < 20 then return end
+    lastAttack = tick()
 
     pcall(function()
         local character = player.Character
@@ -100,10 +105,4 @@ RunService.Heartbeat:Connect(function()
             tool.LeftClickRemote:FireServer(false)
         end
     end)
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(5)
-    end
 end)
